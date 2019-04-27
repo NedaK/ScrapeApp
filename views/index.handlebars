@@ -1,0 +1,84 @@
+<div class="container">
+    <div class="jumbotron" align = "center">
+        <h1 class="display-4">Reddit Scraper</h1>
+        
+        
+            <form class="create-form">
+
+                <div class="form-group">
+                    <label for="ca" ><h3>Enter a Subreddit:</h3></label>
+                    <input type="text" class="form-control" id="subreddit">
+                </div>
+
+                
+
+                <button id="scrape" type="submit"class="btn btn-warning">Scrape Reddit</button>
+            </form>
+    
+    </div>
+    
+    <div class = "row">
+        <div class = "col-12">
+            <div class="card">
+                <div class="card-body articles" align = "center">
+        
+                <h1>Scraped Articles!</h1>
+                {{!-- <ul> --}}
+                    {{#each articles}}
+                        {{!-- {{#unless devoured}} --}}
+                        
+                    <h4>{{title}}</h4>
+	                 
+                    
+                    <p>Link: <a href={{link}}>{{link}}</a></p>
+                    <p>Subreddit: {{subreddit}}</p>
+                        
+                    
+  
+                    <div class="form-group input-group">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-success" id="add-comment" type="submit" data-id="{{_id}}">Username and Comment</button>
+                            
+                        </div>
+                        <input type="text" id="username_{{_id}}" placeholder="Username"class="form-control" data-id="{{_id}}">
+                        <input type="text" id="comment_{{_id}}" placeholder="Comment"class="form-control" data-id="{{_id}}">
+                        
+                    </div>
+                
+                      <hr>  
+                        
+                        {{!-- {{/unless}} --}}
+                    {{/each}}
+                {{!-- </ul> --}}
+                </div>
+            </div>
+        </div>
+    
+
+        {{!-- <div class = "col-6">
+            <div class="card">
+                <div class="card-body" align = "center">
+        
+                <h2>Burgers that are devoured!</h2>
+                
+
+                    <ul>
+                        {{#each burgers}}
+                            {{#if devoured}}
+                            <li>{{name}}</li>
+                            {{/if}}
+                        {{/each}}
+                    </ul>
+                    
+                </div>
+            </div>
+        </div> --}}
+</div>  
+
+
+
+
+
+
+
+</div>
