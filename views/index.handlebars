@@ -23,15 +23,22 @@
                 <div class="card-body articles" align = "center">
         
                 <h1>Scraped Articles!</h1>
-                {{!-- <ul> --}}
+               
                     {{#each articles}}
-                        {{!-- {{#unless devoured}} --}}
+                        
                         
                     <h4>{{title}}</h4>
 	                 
                     
                     <p>Link: <a href={{link}}>{{link}}</a></p>
                     <p>Subreddit: {{subreddit}}</p>
+                    <h4>Comments: </h4>
+                        {{#each comment}}
+                        <p>{{this.username}} --- {{this.comment}}
+                        <button class="btn btn-danger btn-sm" id="delete" type="button" data-id="{{this._id}}">Delete</button>
+                        </p>
+                        {{/each}}
+                        
                         
                     
   
@@ -55,24 +62,6 @@
         </div>
     
 
-        {{!-- <div class = "col-6">
-            <div class="card">
-                <div class="card-body" align = "center">
-        
-                <h2>Burgers that are devoured!</h2>
-                
-
-                    <ul>
-                        {{#each burgers}}
-                            {{#if devoured}}
-                            <li>{{name}}</li>
-                            {{/if}}
-                        {{/each}}
-                    </ul>
-                    
-                </div>
-            </div>
-        </div> --}}
 </div>  
 
 

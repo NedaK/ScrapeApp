@@ -4,7 +4,7 @@ $(document).ready(function(){
 
     $(document).on("click", "#scrape", function(e) {
         e.preventDefault();
-        $(".articles").empty();
+        //$(".articles").empty();
         
         var subreddit = $("#subreddit").val().trim();
         console.log(subreddit);
@@ -12,9 +12,14 @@ $(document).ready(function(){
         $.ajax({
         method: "GET",
         url: "/scrape/" + subreddit
-        }).then(function(response){
-            window.location.reload();
-
+             }).success(function(response){
+        
+                //redirect with scraped articles 
+        if (response.status === "Success") {
+            window.location = response.redirect;
+        }
+            
+            
         });
     });
 
@@ -41,11 +46,25 @@ $(document).ready(function(){
             .then(function(data) {
               // Log the response
               console.log(data);
-              // Empty the notes section
+              window.location.reload();
+              // Empty sections
               $("#comment").empty();
               $("#username").empty();
             });
-    })
+    });
+
+    $(document).on("click", "#delete", function(e){
+        var comment_id = $(this).attr("data-id");
+        console.log(comment_id);
+
+        $.ajax({
+            method: "GET",
+            url: "/comments/" + comment_id
+        }).then(function(response){
+            window.location.reload();
+           // response.redirect("/");
+        });
+    });
 
 });
 

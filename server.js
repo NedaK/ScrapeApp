@@ -26,6 +26,11 @@ var exphbs = require("express-handlebars");
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
+//If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
+// var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/ScrapeAppDB";
+
+// mongoose.connect(MONGODB_URI);
+
 // Connect to the Mongo DB
 mongoose.connect("mongodb://localhost/ScrapeAppDB", { useNewUrlParser: true });
 //mongoose.connection.db.dropDatabase();
@@ -33,29 +38,46 @@ mongoose.connect("mongodb://localhost/ScrapeAppDB", { useNewUrlParser: true });
 
 app.get("/", function(req, res) {
 
-    
-    db.Article.find({}).then(function(data) {
+    //default landing page shows all articles in DB
+    db.Article.find({}).populate("comment").then(function(data) {
       var hbsObject = {
         articles: data
       };
-     console.log(hbsObject);
+     //console.log(hbsObject);
       res.render("index", hbsObject);
     });
   });
 
+  app.get("/:subreddit", function(req, res){
+      var subreddit = req.params.subreddit;
+      console.log("Im in the right route! " + req.params.subreddit);
+      db.Article.find({subreddit:subreddit}).populate("comment").then(function(data) {
+          console.log(data);
+        var hbsObject = {
+          articles: data
+        };
+       //console.log(hbsObject);
+        res.render("index", hbsObject);
+      });
+      
+  })
+
   app.get("/scrape/:subreddit", function(req, res) {
       var subreddit = req.params.subreddit;
+      console.log(subreddit);
     // First, we grab the body of the html with axios
     axios.get("https://old.reddit.com/r/"+ subreddit).then(function(response) {
       // Then, we load that into cheerio and save it to $ for a shorthand selector
       var $ = cheerio.load(response.data);
-  
-      // Now, we grab every h2 within an article tag, and do the following:
+      var count = $("div.thing").length;
+    
+      var articleArray = [];
+
       $("div.thing").each(function(i, element) {
         // Save an empty result object
         var result = {};
-  
-        // Add the text and href of every link, and save them as properties of the result object
+        
+        // Add the title, link, and subreddit of every result, and save them as properties of the result object
         result.title = $(this)
           .find("a.title")
           .text();
@@ -70,20 +92,35 @@ app.get("/", function(req, res) {
         // Create a new Article using the `result` object built from scraping
         db.Article.create(result)
           .then(function(dbArticle) {
-            // View the added result in the console
-            console.log(dbArticle);
+            
+            //console.log(dbArticle);
+             articleArray.push(dbArticle);
+            // console.log("Articlearray: " + articleArray.length);
+            // console.log("Count: " + count);
+            
+            if (articleArray.length === count) {
+                // this will be executed at the end of the loop
+                console.log('Did things to every .element, all done.');
+                
+                // var hbsObj = {
+                //     articles: articleArray
+                // }
+                 res.json({status: "Success", redirect: '/'+subreddit});
+                
+            }
+            
           })
           .catch(function(err) {
             // If an error occurred, log it
             console.log(err);
-          });
+          });  
+
+        });
+
       });
   
-      // Send a message to the client
-      //return res.json("/");
-      res.send("Scrape Complete");
     });
-  });
+  
 
   app.post("/articles/:articleID", function(req, res){
     var article_id = req.params.articleID;
@@ -97,6 +134,30 @@ app.get("/", function(req, res) {
 
   });
 
+  app.get("/articles/:articleID", function(req, res) {
+    // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
+    db.Article.findOne({ _id: req.params.articleID })
+      .populate("comment")
+      .then(function(dbArticle) {
+        // If we were able to successfully find an Article with the given id, send it back to the client
+        res.json(dbArticle);
+      })
+      .catch(function(err) {
+        // If an error occurred, send it to the client
+        res.json(err);
+      });
+  });
+
+  app.get("/comments/:commentID", function(req, res){
+      var comment_id = req.params.commentID;
+      db.Comment.deleteOne({_id: comment_id}, function(err) {
+        if(err){
+            console.error(err);
+        }
+        res.redirect("/");
+      });
+      
+  });
 
 // Start the server
 app.listen(PORT, function() {
