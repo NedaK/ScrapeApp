@@ -27,13 +27,13 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 //If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
-// var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/ScrapeAppDB";
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/ScrapeAppDB";
 
-// mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI);
 
-// Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/ScrapeAppDB", { useNewUrlParser: true });
-//mongoose.connection.db.dropDatabase();
+// Connect to the Mongo DB - locally
+//mongoose.connect("mongodb://localhost/ScrapeAppDB", { useNewUrlParser: true });
+
 
 
 app.get("/", function(req, res) {
