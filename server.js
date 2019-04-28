@@ -34,8 +34,6 @@ mongoose.connect(MONGODB_URI);
 // Connect to the Mongo DB - locally
 //mongoose.connect("mongodb://localhost/ScrapeAppDB", { useNewUrlParser: true });
 
-
-
 app.get("/", function(req, res) {
 
     //default landing page shows all articles in DB
